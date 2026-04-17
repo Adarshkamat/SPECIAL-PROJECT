@@ -2,13 +2,14 @@ import { ArrowLeft, ArrowRight, PersonStanding, ScaleIcon, TargetIcon, User } fr
 import { useAppContext } from "../context/AppContext"
 import toast, {Toaster} from "react-hot-toast"
 import { useState } from "react"
-import { type ProfileFormData, type UserData } from "../types"
+import { type ProfileFormData } from "../types"
 import Input from "../components/ui/Input"
 import Button from "../components/ui/Button"
 
-import mockApi from "../assets/mockApi"
+
 import { ageRanges, goalOptions } from "../assets/assets"
 import Slider from "../components/ui/Slider"
+import api from "../configs/api"
 
 
 
@@ -39,16 +40,20 @@ const Onbording = () => {
                 ...formData,
                 age:formData.age,
                 weight:formData.weight, 
-                height:formData.height,
+                height:formData.height ? formData.height : null ,
                 createdAt:new Date().toISOString()
             }
             localStorage.setItem("fitenessUser",JSON.stringify(userData))
-            await mockApi.user.update(user?.id || "", userData as unknown as Partial<UserData>
-
-            )
-            toast.success("Onboarding Completed")
-            setOnboardingCompleted(true)
-            fetchUser(user?.token || "")
+            try{
+                await api.put(`/api/users/${user?.id}`,userData )
+                 toast.success("Onboarding Completed")
+                setOnboardingCompleted(true)
+                fetchUser(user?.token || '')
+            }catch(err){
+                console.log(err)
+                toast.error("There's an error")
+            }
+           
         }
     }
  

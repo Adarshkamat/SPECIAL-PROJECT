@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react"
 import { useAppContext } from "../context/AppContext"
-import type { ProfileFormData, UserData } from "../types"
+import type { ProfileFormData } from "../types"
 import Card from "../components/ui/Card"
-import { Calendar, LogOutIcon, MoonIcon, RulerIcon, ScaleIcon, Target, User } from "lucide-react"
+import { Calendar, LogOutIcon,  RulerIcon, ScaleIcon, Target, User } from "lucide-react"
 import Button from "../components/ui/Button"
 import { goalLabels, goalOptions } from "../assets/assets"
 import Input from "../components/ui/Input"
 import Select from "../components/ui/Select"
-import mockApi from "../assets/mockApi"
+
 import toast from "react-hot-toast"
+import api from "../configs/api"
 
 const Profile = () => {
   const {user,logout,fetchUser,allFoodLogs,allActivityLogs} = useAppContext()
@@ -42,10 +43,8 @@ const Profile = () => {
 
   const handleSave = async ()=>{
     try{
-      const updates:Partial<UserData> = {
-        ...formdata,goal:formdata.goal as 'lose'|'maintain'|'gain'
-      }
-      await mockApi.user.update(user?.id || "",updates)
+     
+      await api.put(`/api/users/${user.id}`,formdata)
       await fetchUser(user?.token || '')
       toast.success("Profile Updated")
     }catch(err){
